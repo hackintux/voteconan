@@ -1,0 +1,65 @@
+import tkinter as tk
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import threading
+import time
+
+# Configuration de Selenium
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")  # Mode sans interface (à désactiver si besoin)
+driver = webdriver.Chrome(options=options)
+
+class VoteBotApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Vote Automatique")
+        
+        tk.Label(root, text="Entrez votre pseudo :").pack()
+        self.pseudo_entry = tk.Entry(root)
+        self.pseudo_entry.pack()
+        
+        self.start_button = tk.Button(root, text="Démarrer", command=self.start_voting)
+        self.start_button.pack()
+
+        self.status_label = tk.Label(root, text="Statut : En attente")
+        self.status_label.pack()
+
+        self.running = False
+
+    def vote(self):
+        while self.running:
+            pseudo = self.pseudo_entry.get()
+            if not pseudo:
+                self.status_label.config(text="⚠️ Entrez un pseudo avant de démarrer.")
+                return
+            
+            url_vote = f"https://top-serveurs.net/conan-exiles/vote/la-winland"
+            
+            try:
+                driver.get(url_vote)
+                time.sleep(3)  # Attente du chargement
+
+                # Exemple : cliquer sur un bouton de vote (ajuste le sélecteur si besoin)
+                vote_button = driver.find_element(By.CLASS_NAME, "vote-button")
+                vote_button.click()
+
+                self.status_label.config(text="✅ Vote effectué ! Prochain vote dans 2h.")
+            except Exception as e:
+                self.status_label.config(text=f"❌ Erreur : {e}")
+            
+            # Attendre 2 heures avant le prochain vote
+            time.sleep(7200)
+
+    def start_voting(self):
+        if not self.running:
+            self.running = True
+            self.status_label.config(text="🔄 Vote automatique en cours...")
+            threading.Thread(target=self.vote, daemon=True).start()
+
+# Lancer l'interface graphique
+root = tk.Tk()
+app = VoteBotApp(root)
+root.mainloop()
+
+# Fermer Selenium proprement
+driver.quit()
