@@ -33,7 +33,7 @@ class VoteBotApp:
                 self.status_label.config(text="⚠️ Entrez un pseudo avant de démarrer.")
                 return
             
-            url_vote = f"https://top-serveurs.net/conan-exiles/vote/la-winland"
+            url_vote = f"https://top-serveurs.net/conan-exiles/les-cites-oubliees-ps4ps5"
             
             try:
                 driver.get(url_vote)
